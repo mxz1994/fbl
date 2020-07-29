@@ -1,0 +1,33 @@
+name: Flutter Web
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: Build Web
+    env:
+      my_secret: ${{secrets.commit_secret}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'dev'
+      - run: flutter config --enable-web
+      - run: flutter pub get
+      - run: flutter build web --release
+      - run: |
+          cd build/web
+          git init
+          # 改成你的提交邮箱
+          git config --global user.email 836323493@qq.com
+          # 改成你的提交用户名
+          git config --global user.name mxz
+          git status
+          # 更改此远程URL，例如查看您的远程URL是 https://github.com/mxz1994/mxz1994.github.io.git 然后改成以下内容
+          git remote add origin https://${{secrets.commit_secret}}@github.com/mxz1994/mxz1994.github.io.git
+          git checkout -b master
+          git add --all
+          git commit -m "update"
+          git push origin master -f
