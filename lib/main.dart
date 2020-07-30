@@ -1,142 +1,137 @@
-import 'package:flutter/cupertino.dart';
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
-void main() => runApp(MyApp2());
+const String _markdownData = """
+# Markdown Example
+Markdown allows you to easily include formatted text, images, and even formatted Dart code in your app.
 
-class MyApp2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "sadas",
+## Titles
+
+Setext-style
+
+```
+This is an H1
+=============
+
+This is an H2
+-------------
+```
+
+Atx-style
+
+```
+# This is an H1
+
+## This is an H2
+
+###### This is an H6
+```
+
+Select the valid headers:
+
+- [x] `# hello`
+- [ ] `#hello`
+
+## Links
+
+[Google's Homepage][Google]
+
+```
+[inline-style](https://www.google.com)
+
+[reference-style][Google]
+```
+
+## Images
+
+![Flutter logo](/dart-lang/site-shared/master/src/_assets/image/flutter/icon/64.png)
+
+## Tables
+
+|Syntax                                 |Result                               |
+|---------------------------------------|-------------------------------------|
+|`*italic 1*`                           |*italic 1*                           |
+|`_italic 2_`                           | _italic 2_                          |
+|`**bold 1**`                           |**bold 1**                           |
+|`__bold 2__`                           |__bold 2__                           |
+|`This is a ~~strikethrough~~`          |This is a ~~strikethrough~~          |
+|`***italic bold 1***`                  |***italic bold 1***                  |
+|`___italic bold 2___`                  |___italic bold 2___                  |
+|`***~~italic bold strikethrough 1~~***`|***~~italic bold strikethrough 1~~***|
+|`~~***italic bold strikethrough 2***~~`|~~***italic bold strikethrough 2***~~|
+
+## Styling
+Style text as _italic_, __bold__, ~~strikethrough~~, or `inline code`.
+
+- Use bulleted lists
+- To better clarify
+- Your points
+![2](https://www.javadoop.com/blogimages/spring-context/2.png)
+## Code blocks
+Formatted Dart code looks really pretty too:
+
+``` javascript
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      body: Markdown(data: markdownData),
+    ),
+  ));
+}
+```
+
+## Markdown widget
+
+This is an example of how to create your own Markdown widget:
+
+    Markdown(data: 'Hello _world_!');
+
+Enjoy!
+
+[Google]: https://www.google.com/
+
+## Line Breaks
+
+This is an example of how to create line breaks (tab or two whitespaces):
+
+line 1
+  
+   
+line 2
+  
+  
+  
+line 3
+""";
+
+void main() {
+  final controller = ScrollController();
+  
+  runApp(
+    MaterialApp(
+      title: "Markdown Demo",
       home: Scaffold(
         appBar: AppBar(
-          title: Text("aaaaaaaaa"),
+          title: const Text('md'),
         ),
-        body: MyApp(),
-      ),
-    );
-  }
-}
-
-class TextInput extends StatefulWidget {
-  @override
-  _TextInputState createState() => _TextInputState();
-}
-
-class _TextInputState extends State<TextInput> {
-  final TextEditingController _controller = TextEditingController();
-
-  void _li() {
-    if (_controller.text == "ma") {
-      setState(() {
-        _controller.text = "maxingzheng";
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    _controller.addListener(_li);
-  }
-
-  void dispose() {
-    _controller.removeListener(_li);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        TextField(
-          controller: _controller,
-          decoration: InputDecoration(hintText: "hello flutter"),
+        body: SafeArea(
+          child: Markdown(
+            controller: controller,
+            selectable: true,
+            data: _markdownData,
+            imageDirectory: 'https://raw.githubusercontent.com',
+          ),
         ),
-        RaisedButton(
-          onPressed: () {
-            showDialog(
-                context: context,
-                child: AlertDialog(
-                  title: Text("whatyou"),
-                  content: Text(_controller.text),
-                ));
-          },
-          child: Text("Done"),
-        )
-      ],
-    );
-  }
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final todos = List.generate(
-        20,
-        (index) =>
-            Todo('TODO $index', "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$index"));
-
-    return MaterialApp(
-      title: "sadas",
-      home: TodosScreen(
-        todos: todos,
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.arrow_upward),
+          onPressed: () => controller.animateTo(0,
+              duration: Duration(seconds: 1), curve: Curves.easeOut),
+        ),
       ),
-    );
-  }
-}
-
-class TodosScreen extends StatelessWidget {
-  final List<Todo> todos;
-
-  TodosScreen({Key key, @required this.todos}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("aaaaaaaaa"),
-      ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(todos[index].title),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DetailScreen(
-                            todo: todos[index],
-                          )));
-            },
-          );
-        },
-        itemCount: todos.length,
-      ),
-    );
-  }
-}
-
-class DetailScreen extends StatelessWidget {
-  final Todo todo;
-
-  DetailScreen({Key key, this.todo}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("${todo.title}"),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(todo.desc),
-      ),
-    );
-  }
-}
-
-class Todo {
-  final String title;
-  final String desc;
-  Todo(this.title, this.desc);
+    ),
+  );
 }
